@@ -3,6 +3,9 @@ const express = require('express');
 const session = require('express-session');
 const methodOverride = require('method-override');
 const connectDB = require('./config/db');
+const User = require('./models/User');
+const Catway = require('./models/Catway');
+const Reservation = require('./models/Reservation');
 
 const app = express();
 

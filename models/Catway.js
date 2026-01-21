@@ -4,16 +4,20 @@ const catwaySchema = new mongoose.Schema({
     catwayNumber: {
         type: String,
         required: true,
-        unique: true
+        unique: true,
+        min: [1, 'Le numéro doit être positif']
     },
     catwayType: {
         type: String,
         enum: ['short','long'],
-        required: true
+        required: true,
+        message: '"short" or "long" only'
     },
     catwayState: {
         type: String,
-        required: true
+        required: [true, 'L\'état du catway est requis'],
+        trim: true,
+        default: 'bon état'
     }
 }, { timestamps: true });
 
