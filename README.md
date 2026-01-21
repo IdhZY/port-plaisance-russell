@@ -16,3 +16,9 @@ Structures des dossiers
 Fichier .env
 
 MAJ .gitignore
+
+Fichier app.js 
+Correction bug
+
+Ajout de la dep express-session car oublie
+
