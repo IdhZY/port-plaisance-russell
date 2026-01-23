@@ -116,6 +116,7 @@ exports.updateCatway = async (req, res) => {
       message: 'Catway mis à jour avec succès',
       data: catway
     });
+    
   } catch (error) {
     res.status(400).json({
       success: false,

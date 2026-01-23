@@ -43,23 +43,21 @@ app.get('/', (req, res) => {
   });
 });
 
-// Importation des routes
+// Routes
 const authRoutes = require ('./routes/authRoutes');
 const userRoutes = require('./routes/usersRoutes');
 const catwayRoutes = require('./routes/catwaysRoutes');
 const reservationRoutes = require('./routes/reservationRoutes');
 
-//Montage des routes
-app.use('/users', userRoutes);
-app.use('/catways', catwayRoutes);
-app.use('/catways/:id/reservations', reservationRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/catways', catwayRoutes);
+app.use('/api/reservations', reservationRoutes);
 app.use('/api/auth', authRoutes);
 
 // Templates
 app.set('view engine', 'ejs');
 
 // Démarrage serveur
-
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Serveur démarré sur le port ${PORT} 🚀`);
