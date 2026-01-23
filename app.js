@@ -12,12 +12,13 @@ const app = express();
 // Connexion MongoDB
 connectDB();
 
-
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(methodOverride('_method'));
-app.use(express.static('public'));
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.path}`);
+  next();
+});
 
 // Configuration de la session
 app.use(session({
@@ -27,19 +28,39 @@ app.use(session({
   cookie: { maxAge: 3600000 }
 }));
 
+// Routes accueil API
+app.get('/', (req, res) => {
+  console.log('Accueil API');
+  res.json({
+    message: '🚢 Bienvenue sur l\'API Port de Plaisance Russell',
+    version: '1.0.0',
+    endpoints: {
+      auth: '/login, /logout',
+      users: '/users',
+      catways: '/catways',
+      reservations: '/catways/:id/reservations'
+    }
+  });
+});
+
+// Importation des routes
+const authRoutes = require ('./routes/authRoutes');
+const userRoutes = require('./routes/usersRoutes');
+const catwayRoutes = require('./routes/catwaysRoutes');
+const reservationRoutes = require('./routes/reservationRoutes');
+
+//Montage des routes
+app.use('/users', userRoutes);
+app.use('/catways', catwayRoutes);
+app.use('/catways/:id/reservations', reservationRoutes);
+app.use('/api/auth', authRoutes);
+
 // Templates
 app.set('view engine', 'ejs');
 
-// Routes
-
-// Routes TEST
-app.get('/', (req, res) => {
-  res.send('Bienvenue au Port de Plaisance Russell!');
-});
-
 // Démarrage serveur
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Serveur démarré sur le port ${PORT} 🚀`);
 });

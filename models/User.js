@@ -20,7 +20,8 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: [true, 'Le mot de passe est requis'],
-    minlength: [6, 'Le mot de passe doit contenir au moins 6 caractères']
+    minlength: [6, 'Le mot de passe doit contenir au moins 6 caractères'],
+    select: false,
   }
 }, { timestamps: true });
 
