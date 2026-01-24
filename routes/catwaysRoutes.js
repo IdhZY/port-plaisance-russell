@@ -1,18 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const catwayController = require('../controllers/catwayController');
-const reservationController = require('../controllers/reservationController');
+const { isAuthenticated } = require('../middleware/authMiddleware'); // ← AJOUTE
 
-router.get('/:id/reservations', reservationController.getReservationsByCatway);
-router.post('/:id/reservations', reservationController.createReservation);
-router.get('/:id/reservations/:idReservation', reservationController.getReservationById);
-router.put('/:id/reservations/:idReservation', reservationController.updateReservation);
-router.delete('/:id/reservations/:idReservation', reservationController.deleteReservation);
-
-router.get('/', catwayController.getAllCatways);
-router.post('/', catwayController.createCatway);
-router.get('/:id', catwayController.getCatwayById);
-router.put('/:id', catwayController.updateCatway);
-router.delete('/:id', catwayController.deleteCatway);
+router.get('/', isAuthenticated, catwayController.getAllCatways);
+router.get('/:id', isAuthenticated, catwayController.getCatwayById);
+router.post('/', isAuthenticated, catwayController.createCatway);
+router.put('/:id', isAuthenticated, catwayController.updateCatway);
+router.delete('/:id', isAuthenticated, catwayController.deleteCatway);
 
 module.exports = router;

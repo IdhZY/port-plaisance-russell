@@ -25,7 +25,7 @@ const catwayRoutes = require('./routes/catwaysRoutes');
 // ✅ MONTAGE DES ROUTES
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
-app.use('/api/catways', catwayRoutes); // ← Les réservations sont DANS catwayRoutes !
+app.use('/api/catways', catwayRoutes);
 
 // Routes de santé
 app.get('/', (req, res) => {
