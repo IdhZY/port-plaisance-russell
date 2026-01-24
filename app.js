@@ -1,11 +1,6 @@
 require('dotenv').config();
 const express = require('express');
-const session = require('express-session');
-const methodOverride = require('method-override');
 const connectDB = require('./config/db');
-const User = require('./models/User');
-const Catway = require('./models/Catway');
-const Reservation = require('./models/Reservation');
 
 const app = express();
 
@@ -15,52 +10,59 @@ connectDB();
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// 🔍 Middleware de logging (pour debug)
 app.use((req, res, next) => {
-  console.log(`${req.method} ${req.path}`);
+  console.log(`📥 ${req.method} ${req.originalUrl}`);
   next();
 });
 
-// Configuration de la session
-app.use(session({
-  secret: process.env.SESSION_SECRET,
-  resave: false,
-  saveUninitialized: false,
-  cookie: { maxAge: 3600000 }
-}));
+// ✅ IMPORT DES ROUTES
+const authRoutes = require('./routes/authRoutes');
+const userRoutes = require('./routes/usersRoutes');
+const catwayRoutes = require('./routes/catwaysRoutes');
 
-// Routes accueil API
+// ✅ MONTAGE DES ROUTES
+app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/catways', catwayRoutes); // ← Les réservations sont DANS catwayRoutes !
+
+// Routes de santé
 app.get('/', (req, res) => {
-  console.log('Accueil API');
-  res.json({
-    message: '🚢 Bienvenue sur l\'API Port de Plaisance Russell',
-    version: '1.0.0',
-    endpoints: {
-      auth: '/login, /logout',
-      users: '/users',
-      catways: '/catways',
-      reservations: '/catways/:id/reservations'
-    }
+  res.json({ message: 'API Port de Plaisance - OK ✅' });
+});
+
+app.get('/health', (req, res) => {
+  res.json({ 
+    status: 'healthy', 
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString()
   });
 });
 
-// Importation des routes
-const authRoutes = require ('./routes/authRoutes');
-const userRoutes = require('./routes/usersRoutes');
-const catwayRoutes = require('./routes/catwaysRoutes');
-const reservationRoutes = require('./routes/reservationRoutes');
+// 404 Handler
+app.use((req, res) => {
+  console.log('❌ 404 - Route non trouvée:', req.originalUrl);
+  res.status(404).json({ 
+    error: 'Not Found',
+    path: req.originalUrl,
+    message: 'Cette route n\'existe pas'
+  });
+});
 
-//Montage des routes
-app.use('/users', userRoutes);
-app.use('/catways', catwayRoutes);
-app.use('/catways/:id/reservations', reservationRoutes);
-app.use('/api/auth', authRoutes);
-
-// Templates
-app.set('view engine', 'ejs');
+// Error Handler
+app.use((err, req, res, next) => {
+  console.error('❌ Erreur serveur:', err);
+  res.status(err.status || 500).json({ 
+    error: err.message || 'Internal Server Error',
+    ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
+  });
+});
 
 // Démarrage serveur
-
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Serveur démarré sur le port ${PORT} 🚀`);
+  console.log(`🚀 Serveur démarré sur le port ${PORT}`);
+  console.log(`📍 URL: http://localhost:${PORT}`);
+  console.log(`🏥 Health: http://localhost:${PORT}/health`);
 });
