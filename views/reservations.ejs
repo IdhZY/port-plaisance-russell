@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Réservations - Port Russell</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/dashboard">⚓ Port Russell - Réservations</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">🏠 Accueil</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/catways">⚓ Catways</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/reservations">📅 Réservations</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/users">👥 Utilisateurs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/api-docs" target="_blank">📚 API Docs</a>
+                    </li>
+                    <li class="nav-item">
+                        <button class="btn btn-outline-light btn-sm ms-2" onclick="logout()">🚪 Déconnexion</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenu principal -->
+    <div class="container mt-4">
+
+        <!-- En-tête avec bouton d'ajout -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>📅 Gestion des Réservations</h2>
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addReservationModal">
+                ➕ Nouvelle Réservation
+            </button>
+        </div>
+
+        <!-- Filtres -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <input type="text" class="form-control" id="searchClient" placeholder="🔍 Chercher par client...">
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" class="form-control" id="searchBoat" placeholder="🔍 Chercher par bateau...">
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" id="filterStatus">
+                            <option value="">Toutes les réservations</option>
+                            <option value="current">En cours</option>
+                            <option value="future">À venir</option>
+                            <option value="past">Passées</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn btn-outline-secondary w-100" onclick="resetFilters()">🔄 Réinitialiser</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tableau des réservations -->
+        <div class="card">
+            <div class="card-body">
+                <div id="loadingReservations" class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Chargement...</span>
+                    </div>
+                    <p class="mt-2">Chargement des réservations...</p>
+                </div>
+
+                <div id="reservationsTable" style="display: none;">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>N° Catway</th>
+                                    <th>Client</th>
+                                    <th>Bateau</th>
+                                    <th>Début</th>
+                                    <th>Fin</th>
+                                    <th>Statut</th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reservationsBody">
+                                <!-- Rempli par JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="noReservations" style="display: none;" class="alert alert-info">
+                    ℹ️ Aucune réservation trouvée
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Modal AJOUTER une réservation -->
+    <div class="modal fade" id="addReservationModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">➕ Nouvelle Réservation</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addReservationForm">
+                        <div class="mb-3">
+                            <label for="addCatwayNumber" class="form-label">N° Catway *</label>
+                            <input type="number" class="form-control" id="addCatwayNumber" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="addClientName" class="form-label">Nom du client *</label>
+                            <input type="text" class="form-control" id="addClientName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="addBoatName" class="form-label">Nom du bateau *</label>
+                            <input type="text" class="form-control" id="addBoatName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="addStartDate" class="form-label">Date de début *</label>
+                            <input type="date" class="form-control" id="addStartDate" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="addEndDate" class="form-label">Date de fin *</label>
+                            <input type="date" class="form-control" id="addEndDate" required>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                            <button type="submit" class="btn btn-success">Créer</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal MODIFIER une réservation -->
+    <div class="modal fade" id="editReservationModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-warning">
+                    <h5 class="modal-title">✏️ Modifier la Réservation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editReservationForm">
+                        <input type="hidden" id="editReservationId">
+                        <input type="hidden" id="editCatwayNumber">
+                        
+                        <div class="mb-3">
+                            <label class="form-label">N° Catway</label>
+                            <input type="text" class="form-control" id="editCatwayNumberDisplay" disabled>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editClientName" class="form-label">Nom du client *</label>
+                            <input type="text" class="form-control" id="editClientName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editBoatName" class="form-label">Nom du bateau *</label>
+                            <input type="text" class="form-control" id="editBoatName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editStartDate" class="form-label">Date de début *</label>
+                            <input type="date" class="form-control" id="editStartDate" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editEndDate" class="form-label">Date de fin *</label>
+                            <input type="date" class="form-control" id="editEndDate" required>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                            <button type="submit" class="btn btn-warning">Modifier</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Script personnalisé -->
+    <script src="/javascript.js"></script>
+    <script>
+        let allReservations = [];
+
+        // ========================================
+        // CHARGEMENT AU DÉMARRAGE
+        // ========================================
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            loadReservations();
+
+            // Filtres en temps réel
+            document.getElementById('searchClient').addEventListener('input', filterReservations);
+            document.getElementById('searchBoat').addEventListener('input', filterReservations);
+            document.getElementById('filterStatus').addEventListener('change', filterReservations);
+        });
+
+        // ========================================
+        // CHARGER TOUTES LES RÉSERVATIONS
+        // ========================================
+        async function loadReservations() {
+            const token = localStorage.getItem('token');
+            const loadingDiv = document.getElementById('loadingReservations');
+            const tableDiv = document.getElementById('reservationsTable');
+            const noReservationsDiv = document.getElementById('noReservations');
+
+            try {
+                const response = await fetch('/api/catways/reservations/all', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const result = await response.json();
+
+                loadingDiv.style.display = 'none';
+
+                if (!result.success || !result.data || result.data.length === 0) {
+                    noReservationsDiv.style.display = 'block';
+                    return;
+                }
+
+                allReservations = result.data;
+                displayReservations(allReservations);
+                tableDiv.style.display = 'block';
+
+            } catch (error) {
+                console.error('Erreur chargement réservations:', error);
+                loadingDiv.style.display = 'none';
+                noReservationsDiv.style.display = 'block';
+            }
+        }
+
+        // ========================================
+        // AFFICHER LES RÉSERVATIONS
+        // ========================================
+        function displayReservations(reservations) {
+            const tbody = document.getElementById('reservationsBody');
+
+            if (reservations.length === 0) {
+                document.getElementById('noReservations').style.display = 'block';
+                document.getElementById('reservationsTable').style.display = 'none';
+                return;
+            }
+
+            tbody.innerHTML = reservations.map(r => {
+                const status = getReservationStatus(r);
+                return `
+                    <tr>
+                        <td><strong>${r.catwayNumber}</strong></td>
+                        <td>${r.clientName}</td>
+                        <td>${r.boatName}</td>
+                        <td>${formatDate(r.startDate)}</td>
+                        <td>${formatDate(r.endDate)}</td>
+                        <td>${status.badge}</td>
+                        <td class="text-center">
+                            <button class="btn btn-sm btn-warning" onclick="openEditModal('${r._id}', ${r.catwayNumber}, '${r.clientName}', '${r.boatName}', '${r.startDate}', '${r.endDate}')">
+                                ✏️
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteReservation('${r._id}', ${r.catwayNumber})">
+                                🗑️
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            document.getElementById('noReservations').style.display = 'none';
+            document.getElementById('reservationsTable').style.display = 'block';
+        }
+
+        // ========================================
+        // DÉTERMINER LE STATUT
+        // ========================================
+        function getReservationStatus(reservation) {
+            const now = new Date();
+            const start = new Date(reservation.startDate);
+            const end = new Date(reservation.endDate);
+
+            if (end < now) {
+                return { status: 'past', badge: '<span class="badge bg-secondary">Passée</span>' };
+            } else if (start > now) {
+                return { status: 'future', badge: '<span class="badge bg-info">À venir</span>' };
+            } else {
+                return { status: 'current', badge: '<span class="badge bg-success">En cours</span>' };
+            }
+        }
+
+        // ========================================
+        // FILTRER LES RÉSERVATIONS
+        // ========================================
+        function filterReservations() {
+            const searchClient = document.getElementById('searchClient').value.toLowerCase();
+            const searchBoat = document.getElementById('searchBoat').value.toLowerCase();
+            const filterStatus = document.getElementById('filterStatus').value;
+
+            const filtered = allReservations.filter(r => {
+                const matchClient = r.clientName.toLowerCase().includes(searchClient);
+                const matchBoat = r.boatName.toLowerCase().includes(searchBoat);
+                const status = getReservationStatus(r).status;
+                const matchStatus = !filterStatus || status === filterStatus;
+
+                return matchClient && matchBoat && matchStatus;
+            });
+
+            displayReservations(filtered);
+        }
+
+        // ========================================
+        // RÉINITIALISER LES FILTRES
+        // ========================================
+        function resetFilters() {
+            document.getElementById('searchClient').value = '';
+            document.getElementById('searchBoat').value = '';
+            document.getElementById('filterStatus').value = '';
+            displayReservations(allReservations);
+        }
+
+        // ========================================
+        // FORMATER LA DATE
+        // ========================================
+        function formatDate(dateString) {
+            return new Date(dateString).toLocaleDateString('fr-FR');
+        }
+
+        // ========================================
+        // AJOUTER UNE RÉSERVATION
+        // ========================================
+        document.getElementById('addReservationForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const token = localStorage.getItem('token');
+
+            const catwayNumber = document.getElementById('addCatwayNumber').value;
+            const data = {
+                clientName: document.getElementById('addClientName').value,
+                boatName: document.getElementById('addBoatName').value,
+                startDate: document.getElementById('addStartDate').value,
+                endDate: document.getElementById('addEndDate').value
+            };
+
+            try {
+                const response = await fetch(`/api/catways/${catwayNumber}/reservations`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('✅ Réservation créée avec succès !');
+                    bootstrap.Modal.getInstance(document.getElementById('addReservationModal')).hide();
+                    e.target.reset();
+                    loadReservations();
+                } else {
+                    alert('❌ Erreur : ' + result.message);
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('❌ Erreur lors de la création');
+            }
+        });
+
+        // ========================================
+        // OUVRIR LE MODAL DE MODIFICATION
+        // ========================================
+        function openEditModal(id, catwayNumber, clientName, boatName, startDate, endDate) {
+            document.getElementById('editReservationId').value = id;
+            document.getElementById('editCatwayNumber').value = catwayNumber;
+            document.getElementById('editCatwayNumberDisplay').value = catwayNumber;
+            document.getElementById('editClientName').value = clientName;
+            document.getElementById('editBoatName').value = boatName;
+            document.getElementById('editStartDate').value = startDate.split('T')[0];
+            document.getElementById('editEndDate').value = endDate.split('T')[0];
+
+            new bootstrap.Modal(document.getElementById('editReservationModal')).show();
+        }
+
+        // ========================================
+        // MODIFIER UNE RÉSERVATION
+        // ========================================
+        document.getElementById('editReservationForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const token = localStorage.getItem('token');
+
+            const id = document.getElementById('editReservationId').value;
+            const catwayNumber = document.getElementById('editCatwayNumber').value;
+
+            const data = {
+                clientName: document.getElementById('editClientName').value,
+                boatName: document.getElementById('editBoatName').value,
+                startDate: document.getElementById('editStartDate').value,
+                endDate: document.getElementById('editEndDate').value
+            };
+
+            try {
+                const response = await fetch(`/api/catways/${catwayNumber}/reservations/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('✅ Réservation modifiée !');
+                    bootstrap.Modal.getInstance(document.getElementById('editReservationModal')).hide();
+                    loadReservations();
+                } else {
+                    alert('❌ Erreur : ' + result.message);
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('❌ Erreur lors de la modification');
+            }
+        });
+
+        // ========================================
+        // SUPPRIMER UNE RÉSERVATION
+        // ========================================
+        async function deleteReservation(id, catwayNumber) {
+            if (!confirm('⚠️ Supprimer cette réservation ?')) return;
+
+            const token = localStorage.getItem('token');
+
+            try {
+                const response = await fetch(`/api/catways/${catwayNumber}/reservations/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('✅ Réservation supprimée !');
+                    loadReservations();
+                } else {
+                    alert('❌ Erreur : ' + result.message);
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('❌ Erreur lors de la suppression');
+            }
+        }
+    </script>
+</body>
+</html>

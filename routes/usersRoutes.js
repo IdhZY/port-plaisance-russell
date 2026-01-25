@@ -1,14 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
-const { isAuthenticated } = require('../middleware/authMiddleware'); // ← AJOUTE
+const { verifyToken } = require('../middleware/authMiddleware'); // ← CHANGE ICI
 
 // Protéger toutes les routes users
-router.get('/', isAuthenticated, userController.getAllUsers);
-router.get('/:email', isAuthenticated, userController.getUserByEmail);
-router.post('/', isAuthenticated, userController.createUser);
-router.put('/:email', isAuthenticated, userController.updateUser);
-router.delete('/:email', isAuthenticated, userController.deleteUser);
+router.get('/', verifyToken, userController.getAllUsers);
+router.get('/:email', verifyToken, userController.getUserByEmail);
+router.post('/', verifyToken, userController.createUser);
+router.put('/:email', verifyToken, userController.updateUser);
+router.delete('/:email', verifyToken, userController.deleteUser);
 
 module.exports = router;
-
