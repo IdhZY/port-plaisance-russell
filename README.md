@@ -30,3 +30,12 @@ Changement de port 5000 => 3000 (cause airplay sur macOS)
 
 Route pour users/catway/reservation ok manque plus que route pour auth
 
+Projet fini 
+
+Il reste une revue de code complète a faire 
+
+le Readme propre
+
+La documentation API 
+
+deployer l'api avec la solution de mon choix

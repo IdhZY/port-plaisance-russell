@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Utilisateurs - Port Russell</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/dashboard">⚓ Port Russell - Utilisateurs</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">🏠 Accueil</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/catways">⚓ Catways</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/reservations">📅 Réservations</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/users">👥 Utilisateurs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/api-docs" target="_blank">📚 API Docs</a>
+                    </li>
+                    <li class="nav-item">
+                        <button class="btn btn-outline-light btn-sm ms-2" onclick="logout()">🚪 Déconnexion</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenu principal -->
+    <div class="container mt-4">
+
+        <!-- En-tête avec bouton d'ajout -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>👥 Gestion des Utilisateurs</h2>
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                ➕ Nouvel Utilisateur
+            </button>
+        </div>
+
+        <!-- Filtres -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" id="searchUsername" placeholder="🔍 Chercher par nom d'utilisateur...">
+                    </div>
+                    <div class="col-md-4">
+                        <input type="email" class="form-control" id="searchEmail" placeholder="🔍 Chercher par email...">
+                    </div>
+                    <div class="col-md-4">
+                        <button class="btn btn-outline-secondary w-100" onclick="resetFilters()">🔄 Réinitialiser</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistiques -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card text-white bg-primary">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Total Utilisateurs</h5>
+                        <p class="display-4" id="totalUsers">-</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tableau des utilisateurs -->
+        <div class="card">
+            <div class="card-body">
+                <div id="loadingUsers" class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Chargement...</span>
+                    </div>
+                    <p class="mt-2">Chargement des utilisateurs...</p>
+                </div>
+
+                <div id="usersTable" style="display: none;">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Nom d'utilisateur</th>
+                                    <th>Email</th>
+                                    <th>Date de création</th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersBody">
+                                <!-- Rempli par JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="noUsers" style="display: none;" class="alert alert-info">
+                    ℹ️ Aucun utilisateur trouvé
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Modal AJOUTER un utilisateur -->
+    <div class="modal fade" id="addUserModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">➕ Nouvel Utilisateur</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addUserForm">
+                        <div class="mb-3">
+                            <label for="addUsername" class="form-label">Nom d'utilisateur *</label>
+                            <input type="text" class="form-control" id="addUsername" required>
+                            <small class="text-muted">Minimum 3 caractères</small>
+                        </div>
+                        <div class="mb-3">
+                            <label for="addEmail" class="form-label">Email *</label>
+                            <input type="email" class="form-control" id="addEmail" required>
+                            <small class="text-muted">Doit être unique</small>
+                        </div>
+                        <div class="mb-3">
+                            <label for="addPassword" class="form-label">Mot de passe *</label>
+                            <input type="password" class="form-control" id="addPassword" required>
+                            <small class="text-muted">Minimum 6 caractères</small>
+                        </div>
+                        <div class="mb-3">
+                            <label for="addPasswordConfirm" class="form-label">Confirmer le mot de passe *</label>
+                            <input type="password" class="form-control" id="addPasswordConfirm" required>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                            <button type="submit" class="btn btn-success">Créer</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal MODIFIER un utilisateur -->
+    <div class="modal fade" id="editUserModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-warning">
+                    <h5 class="modal-title">✏️ Modifier l'Utilisateur</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editUserForm">
+                        <input type="hidden" id="editUserEmail">
+                        
+                        <div class="mb-3">
+                            <label for="editUsername" class="form-label">Nom d'utilisateur *</label>
+                            <input type="text" class="form-control" id="editUsername" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" id="editEmailDisplay" disabled>
+                            <small class="text-muted">L'email ne peut pas être modifié</small>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editPassword" class="form-label">Nouveau mot de passe (optionnel)</label>
+                            <input type="password" class="form-control" id="editPassword">
+                            <small class="text-muted">Laissez vide pour ne pas changer</small>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editPasswordConfirm" class="form-label">Confirmer le nouveau mot de passe</label>
+                            <input type="password" class="form-control" id="editPasswordConfirm">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                            <button type="submit" class="btn btn-warning">Modifier</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal DÉTAILS d'un utilisateur -->
+    <div class="modal fade" id="detailsUserModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-info text-white">
+                    <h5 class="modal-title">🔍 Détails de l'Utilisateur</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <strong>Nom d'utilisateur :</strong>
+                        <p id="detailsUsername" class="mb-0">-</p>
+                    </div>
+                    <div class="mb-3">
+                        <strong>Email :</strong>
+                        <p id="detailsEmail" class="mb-0">-</p>
+                    </div>
+                    <div class="mb-3">
+                        <strong>Date de création :</strong>
+                        <p id="detailsCreatedAt" class="mb-0">-</p>
+                    </div>
+                    <div class="mb-3">
+                        <strong>ID :</strong>
+                        <p id="detailsId" class="mb-0 text-muted small">-</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Script personnalisé -->
+    <script src="/javascript.js"></script>
+    <script>
+        let allUsers = [];
+
+        // ========================================
+        // CHARGEMENT AU DÉMARRAGE
+        // ========================================
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            loadUsers();
+
+            // Filtres en temps réel
+            document.getElementById('searchUsername').addEventListener('input', filterUsers);
+            document.getElementById('searchEmail').addEventListener('input', filterUsers);
+        });
+
+        // ========================================
+        // CHARGER TOUS LES UTILISATEURS
+        // ========================================
+        async function loadUsers() {
+            const token = localStorage.getItem('token');
+            const loadingDiv = document.getElementById('loadingUsers');
+            const tableDiv = document.getElementById('usersTable');
+            const noUsersDiv = document.getElementById('noUsers');
+
+            try {
+                const response = await fetch('/api/users', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const result = await response.json();
+
+                loadingDiv.style.display = 'none';
+
+                if (!result.success || !result.data || result.data.length === 0) {
+                    noUsersDiv.style.display = 'block';
+                    return;
+                }
+
+                allUsers = result.data;
+                displayUsers(allUsers);
+                updateStats(allUsers);
+                tableDiv.style.display = 'block';
+
+            } catch (error) {
+                console.error('Erreur chargement utilisateurs:', error);
+                loadingDiv.style.display = 'none';
+                noUsersDiv.style.display = 'block';
+            }
+        }
+
+        // ========================================
+        // AFFICHER LES UTILISATEURS
+        // ========================================
+        function displayUsers(users) {
+            const tbody = document.getElementById('usersBody');
+
+            if (users.length === 0) {
+                document.getElementById('noUsers').style.display = 'block';
+                document.getElementById('usersTable').style.display = 'none';
+                return;
+            }
+
+            tbody.innerHTML = users.map(u => {
+                const createdAt = u.createdAt ? new Date(u.createdAt).toLocaleDateString('fr-FR') : '-';
+
+                return `
+                    <tr>
+                        <td><strong>${u.username}</strong></td>
+                        <td>${u.email}</td>
+                        <td>${createdAt}</td>
+                        <td class="text-center">
+                            <button class="btn btn-sm btn-info" onclick='openDetailsModal(${JSON.stringify(u)})'>
+                                🔍
+                            </button>
+                            <button class="btn btn-sm btn-warning" onclick='openEditModal(${JSON.stringify(u)})'>
+                                ✏️
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteUser('${u.email}')">
+                                🗑️
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            document.getElementById('noUsers').style.display = 'none';
+            document.getElementById('usersTable').style.display = 'block';
+        }
+
+        // ========================================
+        // METTRE À JOUR LES STATISTIQUES
+        // ========================================
+        function updateStats(users) {
+            document.getElementById('totalUsers').textContent = users.length;
+        }
+
+        // ========================================
+        // FILTRER LES UTILISATEURS
+        // ========================================
+        function filterUsers() {
+            const searchUsername = document.getElementById('searchUsername').value.toLowerCase();
+            const searchEmail = document.getElementById('searchEmail').value.toLowerCase();
+
+            const filtered = allUsers.filter(u => {
+                const matchUsername = u.username.toLowerCase().includes(searchUsername);
+                const matchEmail = u.email.toLowerCase().includes(searchEmail);
+
+                return matchUsername && matchEmail;
+            });
+
+            displayUsers(filtered);
+            updateStats(filtered);
+        }
+
+        // ========================================
+        // RÉINITIALISER LES FILTRES
+        // ========================================
+        function resetFilters() {
+            document.getElementById('searchUsername').value = '';
+            document.getElementById('searchEmail').value = '';
+            displayUsers(allUsers);
+            updateStats(allUsers);
+        }
+
+        // ========================================
+        // AJOUTER UN UTILISATEUR
+        // ========================================
+        document.getElementById('addUserForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const token = localStorage.getItem('token');
+
+            const password = document.getElementById('addPassword').value;
+            const passwordConfirm = document.getElementById('addPasswordConfirm').value;
+
+            // Validation
+            if (password !== passwordConfirm) {
+                alert('❌ Les mots de passe ne correspondent pas !');
+                return;
+            }
+
+            if (password.length < 6) {
+                alert('❌ Le mot de passe doit contenir au moins 6 caractères !');
+                return;
+            }
+
+            const data = {
+                username: document.getElementById('addUsername').value,
+                email: document.getElementById('addEmail').value,
+                password: password
+            };
+
+            try {
+                const response = await fetch('/api/users', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('✅ Utilisateur créé avec succès !');
+                    bootstrap.Modal.getInstance(document.getElementById('addUserModal')).hide();
+                    e.target.reset();
+                    loadUsers();
+                } else {
+                    alert('❌ Erreur : ' + result.message);
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('❌ Erreur lors de la création');
+            }
+        });
+
+        // ========================================
+        // OUVRIR LE MODAL DE MODIFICATION
+        // ========================================
+        function openEditModal(user) {
+            document.getElementById('editUserEmail').value = user.email;
+            document.getElementById('editUsername').value = user.username;
+            document.getElementById('editEmailDisplay').value = user.email;
+            document.getElementById('editPassword').value = '';
+            document.getElementById('editPasswordConfirm').value = '';
+
+            new bootstrap.Modal(document.getElementById('editUserModal')).show();
+        }
+
+        // ========================================
+        // MODIFIER UN UTILISATEUR
+        // ========================================
+        document.getElementById('editUserForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const token = localStorage.getItem('token');
+
+            const email = document.getElementById('editUserEmail').value;
+            const password = document.getElementById('editPassword').value;
+            const passwordConfirm = document.getElementById('editPasswordConfirm').value;
+
+            // Validation si changement de mot de passe
+            if (password) {
+                if (password !== passwordConfirm) {
+                    alert('❌ Les mots de passe ne correspondent pas !');
+                    return;
+                }
+                if (password.length < 6) {
+                    alert('❌ Le mot de passe doit contenir au moins 6 caractères !');
+                    return;
+                }
+            }
+
+            const data = {
+                username: document.getElementById('editUsername').value
+            };
+
+            // Ajouter le mot de passe uniquement s'il est renseigné
+            if (password) {
+                data.password = password;
+            }
+
+            try {
+                const response = await fetch(`/api/users/${encodeURIComponent(email)}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('✅ Utilisateur modifié !');
+                    bootstrap.Modal.getInstance(document.getElementById('editUserModal')).hide();
+                    loadUsers();
+                } else {
+                    alert('❌ Erreur : ' + result.message);
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('❌ Erreur lors de la modification');
+            }
+        });
+
+        // ========================================
+        // SUPPRIMER UN UTILISATEUR
+        // ========================================
+        async function deleteUser(email) {
+            if (!confirm('⚠️ Supprimer cet utilisateur ?')) return;
+
+            const token = localStorage.getItem('token');
+
+            try {
+                const response = await fetch(`/api/users/${encodeURIComponent(email)}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('✅ Utilisateur supprimé !');
+                    loadUsers();
+                } else {
+                    alert('❌ Erreur : ' + result.message);
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('❌ Erreur lors de la suppression');
+            }
+        }
+
+        // ========================================
+        // OUVRIR LE MODAL DÉTAILS
+        // ========================================
+        function openDetailsModal(user) {
+            document.getElementById('detailsUsername').textContent = user.username;
+            document.getElementById('detailsEmail').textContent = user.email;
+            document.getElementById('detailsCreatedAt').textContent = user.createdAt 
+                ? new Date(user.createdAt).toLocaleString('fr-FR')
+                : '-';
+            document.getElementById('detailsId').textContent = user._id || '-';
+
+            new bootstrap.Modal(document.getElementById('detailsUserModal')).show();
+        }
+    </script>
+</body>
+</html>

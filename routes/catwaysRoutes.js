@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const catwayController = require('../controllers/catwayController');
-const { isAuthenticated } = require('../middleware/authMiddleware'); // ← AJOUTE
+const { verifyToken } = require('../middleware/authMiddleware'); // ← CHANGE ICI
 
-router.get('/', isAuthenticated, catwayController.getAllCatways);
-router.get('/:id', isAuthenticated, catwayController.getCatwayById);
-router.post('/', isAuthenticated, catwayController.createCatway);
-router.put('/:id', isAuthenticated, catwayController.updateCatway);
-router.delete('/:id', isAuthenticated, catwayController.deleteCatway);
+// Routes catways (toutes protégées)
+router.get('/', verifyToken, catwayController.getAllCatways);
+router.get('/:id', verifyToken, catwayController.getCatwayById);
+router.post('/', verifyToken, catwayController.createCatway);
+router.put('/:id', verifyToken, catwayController.updateCatway);
+router.delete('/:id', verifyToken, catwayController.deleteCatway);
 
 module.exports = router;

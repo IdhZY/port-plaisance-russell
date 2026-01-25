@@ -1,13 +1,13 @@
 const express = require('express');
-const router = express.Router({ mergeParams: true });
+const router = express.Router();
 const reservationController = require('../controllers/reservationController');
-const { isAuthenticated } = require('../middleware/authMiddleware'); // ← AJOUTE
+const { verifyToken } = require('../middleware/authMiddleware'); // ← CHANGE ICI
 
-// Protéger toutes les routes
-router.get('/', isAuthenticated, reservationController.getAllReservations);
-router.get('/:idReservation', isAuthenticated, reservationController.getReservationById);
-router.post('/', isAuthenticated, reservationController.createReservation);
-router.put('/:idReservation', isAuthenticated, reservationController.updateReservation);
-router.delete('/:idReservation', isAuthenticated, reservationController.deleteReservation);
+// Routes réservations (toutes protégées)
+router.get('/:id/reservations', verifyToken, reservationController.getReservationsByCatway);
+router.get('/:id/reservations/:idReservation', verifyToken, reservationController.getReservationById);
+router.post('/:id/reservations', verifyToken, reservationController.createReservation);
+router.put('/:id/reservations/:idReservation', verifyToken, reservationController.updateReservation);
+router.delete('/:id/reservations/:idReservation', verifyToken, reservationController.deleteReservation);
 
 module.exports = router;
