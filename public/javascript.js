@@ -1,17 +1,13 @@
-// ========================================
-// VÉRIFICATION DE L'AUTHENTIFICATION
-// ========================================
+// Vérification de l'authentification
 function checkAuth() {
     const token = localStorage.getItem('token');
     const currentPath = window.location.pathname;
 
-    // Si pas de token et on est sur une page protégée
     if (!token && currentPath !== '/' && currentPath !== '/api-docs') {
         window.location.href = '/';
         return false;
     }
 
-    // Si token existe et on est sur la page de connexion
     if (token && currentPath === '/') {
         window.location.href = '/dashboard';
         return false;
@@ -19,24 +15,16 @@ function checkAuth() {
 
     return true;
 }
-
-// ========================================
-// FONCTION DE DÉCONNEXION
-// ========================================
+// Déconnexion
 function logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     window.location.href = '/';
 }
 
-// ========================================
-// ATTENDRE QUE LE DOM SOIT CHARGÉ
-// ========================================
 document.addEventListener('DOMContentLoaded', () => {
 
-    // ========================================
-    // GESTION DE LA CONNEXION (PAGE INDEX)
-    // ========================================
+    // Page Index
     const loginForm = document.getElementById('loginForm');
 
     if (loginForm) {
@@ -48,13 +36,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const errorMessage = document.getElementById('errorMessage');
             const submitBtn = e.target.querySelector('button[type="submit"]');
 
-            // Désactiver le bouton pendant la requête
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Connexion...';
 
             try {
-                console.log('🔄 Tentative de connexion...');
-
                 const response = await fetch('/api/auth/login', {
                     method: 'POST',
                     headers: {
@@ -64,21 +49,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 const data = await response.json();
-                console.log('📥 Réponse serveur:', data);
 
                 if (response.ok && data.success) {
                     // Stocker le token et les infos user
                     localStorage.setItem('token', data.token);
                     localStorage.setItem('user', JSON.stringify(data.user));
-
-                    // Message de succès
                     errorMessage.className = 'alert alert-success';
                     errorMessage.textContent = '✅ Connexion réussie ! Redirection...';
                     errorMessage.style.display = 'block';
 
-                    console.log('✅ Connexion réussie, redirection...');
-
-                    // Rediriger vers le dashboard
                     setTimeout(() => {
                         window.location.href = '/dashboard';
                     }, 1000);
@@ -92,34 +71,24 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Réactiver le bouton
                     submitBtn.disabled = false;
                     submitBtn.textContent = 'Se connecter';
-
-                    console.error('❌ Erreur:', data.message);
                 }
 
             } catch (error) {
-                console.error('❌ Erreur de connexion:', error);
                 errorMessage.className = 'alert alert-danger';
                 errorMessage.textContent = 'Erreur de connexion au serveur';
                 errorMessage.style.display = 'block';
 
-                // Réactiver le bouton
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Se connecter';
             }
         });
     }
 
-    // ========================================
-    // GESTION DU DASHBOARD
-    // ========================================
-    if (window.location.pathname === '/dashboard') {  // ✅ CORRIGÉ ICI
+    // Gestion du dashboard
+    if (window.location.pathname === '/dashboard') {
 
-        // Vérifier l'authentification
         if (!checkAuth()) return;
 
-        console.log('📊 Chargement du dashboard...');
-
-        // Charger les infos utilisateur
         const user = JSON.parse(localStorage.getItem('user'));
 
         if (user) {
@@ -149,9 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// ========================================
-// CHARGER LES RÉSERVATIONS EN COURS
-// ========================================
+// Charger les reservations en cours
 async function loadReservations() {
     const token = localStorage.getItem('token');
     const loadingDiv = document.getElementById('loadingReservations');
@@ -161,10 +128,7 @@ async function loadReservations() {
 
     if (!tbody) return;
 
-    console.log('📋 Chargement des réservations...');
-
     try {
-        // 1. Récupérer tous les catways
         const catwaysResponse = await fetch('/api/catways', {
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -180,7 +144,6 @@ async function loadReservations() {
 
         let allReservations = [];
 
-        // 2. Pour chaque catway, récupérer ses réservations
         for (let catway of catwaysResult.data) {
             try {
                 const resResponse = await fetch(`/api/catways/${catway.catwayNumber}/reservations`, {
@@ -200,13 +163,9 @@ async function loadReservations() {
                     }
                 }
             } catch (error) {
-                console.log(`Pas de réservations pour le catway ${catway.catwayNumber}`);
             }
         }
 
-        console.log('📋 Total réservations:', allReservations.length);
-
-        // 3. Filtrer les réservations en cours
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
@@ -216,20 +175,14 @@ async function loadReservations() {
             return endDate >= today;
         });
 
-        console.log('✅ Réservations en cours:', activeReservations.length);
-
-        // 4. Masquer le loading
         if (loadingDiv) loadingDiv.style.display = 'none';
 
-        // 5. Afficher les résultats
         if (activeReservations.length === 0) {
             if (noReservationsDiv) noReservationsDiv.style.display = 'block';
             if (tableDiv) tableDiv.style.display = 'none';
         } else {
-            // Trier par date de début
             activeReservations.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
 
-            // Générer le HTML du tableau
             tbody.innerHTML = activeReservations.map(r => `
                 <tr>
                     <td><span class="badge bg-primary">${r.catwayNumber}</span></td>
@@ -258,7 +211,4 @@ async function loadReservations() {
     }
 }
 
-// ========================================
-// VÉRIFICATION AU CHARGEMENT DE CHAQUE PAGE
-// ========================================
 checkAuth();

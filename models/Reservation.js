@@ -1,5 +1,5 @@
-const { buildCheckFunction } = require('express-validator');
 const mongoose = require('mongoose');
+const { buildCheckFunction } = require('express-validator');
 
 const reservationSchema = new mongoose.Schema({
     catwayNumber: {

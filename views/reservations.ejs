@@ -7,59 +7,56 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-
-    <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/dashboard">⚓ Port Russell - Réservations</a>
+            <a class="navbar-brand" href="/dashboard"> Port Russell - Dashboard</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="/dashboard">🏠 Accueil</a>
+                        <a class="nav-link active" href="/dashboard">Accueil</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/catways">⚓ Catways</a>
+                        <a class="nav-link" href="/catways">Catways</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="/reservations">📅 Réservations</a>
+                        <a class="nav-link" href="/reservations">Réservations</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/users">👥 Utilisateurs</a>
+                        <a class="nav-link" href="/users">Utilisateurs</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/api-docs" target="_blank">📚 API Docs</a>
+                        <a class="nav-link" href="/api-docs" target="_blank">API Docs</a>
                     </li>
                     <li class="nav-item">
-                        <button class="btn btn-outline-light btn-sm ms-2" onclick="logout()">🚪 Déconnexion</button>
+                        <button class="btn btn-outline-light btn-sm ms-2" onclick="logout()">Déconnexion</button>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
 
-    <!-- Contenu principal -->
     <div class="container mt-4">
 
         <!-- En-tête avec bouton d'ajout -->
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>📅 Gestion des Réservations</h2>
+            <h2>Gestion des Réservations</h2>
             <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addReservationModal">
-                ➕ Nouvelle Réservation
+                Nouvelle Réservation
             </button>
         </div>
 
-        <!-- Filtres -->
+
         <div class="card mb-4">
             <div class="card-body">
                 <div class="row g-3">
                     <div class="col-md-3">
-                        <input type="text" class="form-control" id="searchClient" placeholder="🔍 Chercher par client...">
+                        <input type="text" class="form-control" id="searchClient" placeholder="Chercher par client...">
                     </div>
                     <div class="col-md-3">
-                        <input type="text" class="form-control" id="searchBoat" placeholder="🔍 Chercher par bateau...">
+                        <input type="text" class="form-control" id="searchBoat" placeholder="Chercher par bateau...">
                     </div>
                     <div class="col-md-3">
                         <select class="form-select" id="filterStatus">
@@ -70,7 +67,7 @@
                         </select>
                     </div>
                     <div class="col-md-3">
-                        <button class="btn btn-outline-secondary w-100" onclick="resetFilters()">🔄 Réinitialiser</button>
+                        <button class="btn btn-outline-secondary w-100" onclick="resetFilters()">Réinitialiser</button>
                     </div>
                 </div>
             </div>
@@ -101,26 +98,24 @@
                                 </tr>
                             </thead>
                             <tbody id="reservationsBody">
-                                <!-- Rempli par JavaScript -->
                             </tbody>
                         </table>
                     </div>
                 </div>
 
                 <div id="noReservations" style="display: none;" class="alert alert-info">
-                    ℹ️ Aucune réservation trouvée
+                    Aucune réservation trouvée
                 </div>
             </div>
         </div>
 
     </div>
 
-    <!-- Modal AJOUTER une réservation -->
     <div class="modal fade" id="addReservationModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header bg-success text-white">
-                    <h5 class="modal-title">➕ Nouvelle Réservation</h5>
+                    <h5 class="modal-title">Nouvelle Réservation</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
@@ -155,12 +150,11 @@
         </div>
     </div>
 
-    <!-- Modal MODIFIER une réservation -->
     <div class="modal fade" id="editReservationModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header bg-warning">
-                    <h5 class="modal-title">✏️ Modifier la Réservation</h5>
+                    <h5 class="modal-title">Modifier la Réservation</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
@@ -198,30 +192,20 @@
         </div>
     </div>
 
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Script personnalisé -->
     <script src="/javascript.js"></script>
     <script>
         let allReservations = [];
 
-        // ========================================
-        // CHARGEMENT AU DÉMARRAGE
-        // ========================================
         document.addEventListener('DOMContentLoaded', () => {
             checkAuth();
             loadReservations();
 
-            // Filtres en temps réel
             document.getElementById('searchClient').addEventListener('input', filterReservations);
             document.getElementById('searchBoat').addEventListener('input', filterReservations);
             document.getElementById('filterStatus').addEventListener('change', filterReservations);
         });
 
-        // ========================================
-        // CHARGER TOUTES LES RÉSERVATIONS
-        // ========================================
         async function loadReservations() {
             const token = localStorage.getItem('token');
             const loadingDiv = document.getElementById('loadingReservations');
@@ -253,9 +237,6 @@
             }
         }
 
-        // ========================================
-        // AFFICHER LES RÉSERVATIONS
-        // ========================================
         function displayReservations(reservations) {
             const tbody = document.getElementById('reservationsBody');
 
@@ -291,9 +272,6 @@
             document.getElementById('reservationsTable').style.display = 'block';
         }
 
-        // ========================================
-        // DÉTERMINER LE STATUT
-        // ========================================
         function getReservationStatus(reservation) {
             const now = new Date();
             const start = new Date(reservation.startDate);
@@ -308,9 +286,6 @@
             }
         }
 
-        // ========================================
-        // FILTRER LES RÉSERVATIONS
-        // ========================================
         function filterReservations() {
             const searchClient = document.getElementById('searchClient').value.toLowerCase();
             const searchBoat = document.getElementById('searchBoat').value.toLowerCase();
@@ -328,9 +303,6 @@
             displayReservations(filtered);
         }
 
-        // ========================================
-        // RÉINITIALISER LES FILTRES
-        // ========================================
         function resetFilters() {
             document.getElementById('searchClient').value = '';
             document.getElementById('searchBoat').value = '';
@@ -338,16 +310,10 @@
             displayReservations(allReservations);
         }
 
-        // ========================================
-        // FORMATER LA DATE
-        // ========================================
         function formatDate(dateString) {
             return new Date(dateString).toLocaleDateString('fr-FR');
         }
 
-        // ========================================
-        // AJOUTER UNE RÉSERVATION
-        // ========================================
         document.getElementById('addReservationForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const token = localStorage.getItem('token');
@@ -386,9 +352,6 @@
             }
         });
 
-        // ========================================
-        // OUVRIR LE MODAL DE MODIFICATION
-        // ========================================
         function openEditModal(id, catwayNumber, clientName, boatName, startDate, endDate) {
             document.getElementById('editReservationId').value = id;
             document.getElementById('editCatwayNumber').value = catwayNumber;
@@ -401,9 +364,6 @@
             new bootstrap.Modal(document.getElementById('editReservationModal')).show();
         }
 
-        // ========================================
-        // MODIFIER UNE RÉSERVATION
-        // ========================================
         document.getElementById('editReservationForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const token = localStorage.getItem('token');
@@ -443,9 +403,6 @@
             }
         });
 
-        // ========================================
-        // SUPPRIMER UNE RÉSERVATION
-        // ========================================
         async function deleteReservation(id, catwayNumber) {
             if (!confirm('⚠️ Supprimer cette réservation ?')) return;
 
