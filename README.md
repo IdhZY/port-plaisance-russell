@@ -1,41 +1,87 @@
-Dépendances installées: 
+# 🚤 Port de Plaisance Russell
 
-express : Framework web
-mongoose : ODM pour MongoDB
-dotenv : Variables d'environnement
-bcryptjs : Hashage des mots de passe
-jsonwebtoken : Authentification JWT
-express-session : Gestion des sessions
-ejs : Moteur de templates pour le frontend
-method-override : Pour PUT/DELETE depuis des formulaires HTML
-express-validator : Validation des données
-nodemon : Redémarrage auto en dev
+API REST pour la gestion des catways et reservations
 
-Structures des dossiers 
+## 📋 Prérequis
 
-Fichier .env
+- Node.js
+- MongoDB
+- npm
 
-MAJ .gitignore
+## 🚀 Installation
 
-Fichier app.js 
-Correction bug
+# Cloner le projet
+gh repo clone IdhZY/port-plaisance-russell
+cd port-plaisance-russell
 
-Ajout de la dep express-session car oublie
+# Installer les dépendances
+npm install
 
-Dossier /models à jour
+Créer un fichier `.env` :
 
-Importation données .json
+PORT=3000
+MONGODB_URI=mongodb://localhost:27017/port-russell
+JWT_SECRET=votre_secret_jwt
 
-Changement de port 5000 => 3000 (cause airplay sur macOS)
+# Mode développement
+npm run dev
 
-Route pour users/catway/reservation ok manque plus que route pour auth
+# Mode production
+npm start
 
-Projet fini 
+## API
 
-Il reste une revue de code complète a faire 
+## Authentification
 
-le Readme propre
+| Méthode | Route | Description |
+|---------|-------|-------------|
+| POST | `/api/auth/register` | Inscription |
+| POST | `/api/auth/login` | Connexion |
 
-La documentation API 
+## Utilisateurs
 
-deployer l'api avec la solution de mon choix
+| Méthode | Route | Description |
+|---------|-------|-------------|
+| GET | `/api/users` | Liste des utilisateurs |
+| GET | `/api/users/:id` | Détail d'un utilisateur |
+| PUT | `/api/users/:id` | Modifier un utilisateur |
+| DELETE | `/api/users/:id` | Supprimer un utilisateur |
+
+## Catways
+
+| Méthode | Route | Description |
+|---------|-------|-------------|
+| GET | `/api/catways` | Liste des catways |
+| GET | `/api/catways/:id` | Détail d'un catway |
+| POST | `/api/catways` | Créer un catway |
+| PUT | `/api/catways/:id` | Modifier un catway |
+| DELETE | `/api/catways/:id` | Supprimer un catway |
+
+## Réservations
+
+| Méthode | Route | Description |
+|---------|-------|-------------|
+| GET | `/api/catways/:id/reservations` | Réservations d'un catway |
+| POST | `/api/catways/:id/reservations` | Créer une réservation |
+| DELETE | `/api/catways/:id/reservations/:idReservation` | Supprimer une réservation |
+
+## Exemples d'utilisation
+
+## Créer un catway
+
+curl -X POST http://localhost:3000/api/catways \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <token>" \
+  -d '{"catwayNumber": 1, "type": "long", "catwayState": "Bon état"}'
+
+## Créer une réservation
+
+curl -X POST http://localhost:3000/api/catways/1/reservations \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <token>" \
+  -d '{
+    "clientName": "Jean Dupont",
+    "boatName": "Le Navigateur",
+    "startDate": "2026-07-01",
+    "endDate": "2026-07-15"
+  }'
