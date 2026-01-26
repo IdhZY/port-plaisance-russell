@@ -28,6 +28,10 @@ app.get('/', (req, res) => {
   res.render('index');
 });
 
+app.get('/register', (req, res) => {
+    res.render('register');
+});
+
 app.get('/api-docs', (req, res) => {
   res.send('<h1>📚 Documentation API à venir</h1>');
 });
