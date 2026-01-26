@@ -1,7 +1,7 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 
-// Login - Connexion
+// Login
 exports.login = async (req, res) => {
   try {
     console.log('Body reçu:', req.body);
@@ -27,7 +27,7 @@ exports.login = async (req, res) => {
     }
 
     const isPasswordValid = await user.comparePassword(password);
-    console.log('Mot de passe valide ?', isPasswordValid);
+    console.log('Mot de passe valide', isPasswordValid);
 
     if (!isPasswordValid) {
       return res.status(401).json({
@@ -66,12 +66,11 @@ exports.login = async (req, res) => {
   }
 };
 
-// Register - Inscription
+// Register
 exports.register = async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
-    // Vérifier que tous les champs sont fournis
     if (!username || !email || !password) {
       return res.status(400).json({
         success: false,
@@ -79,7 +78,6 @@ exports.register = async (req, res) => {
       });
     }
 
-    // Vérifier si l'utilisateur existe déjà
     const existingUser = await User.findOne({ 
       $or: [{ email }, { username }] 
     });
@@ -91,7 +89,6 @@ exports.register = async (req, res) => {
       });
     }
 
-    // Créer le nouvel utilisateur
     const user = new User({
       username,
       email,
@@ -120,7 +117,7 @@ exports.register = async (req, res) => {
   }
 };
 
-// Logout - Déconnexion
+// Logout
 exports.logout = (req, res) => {
   res.status(200).json({
     success: true,

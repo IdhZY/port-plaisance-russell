@@ -7,56 +7,50 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-
-    <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/dashboard">⚓ Port Russell - Catways</a>
+            <a class="navbar-brand" href="/dashboard"> Port Russell - Dashboard</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="/dashboard">🏠 Accueil</a>
+                        <a class="nav-link active" href="/dashboard">Accueil</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="/catways">⚓ Catways</a>
+                        <a class="nav-link" href="/catways">Catways</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/reservations">📅 Réservations</a>
+                        <a class="nav-link" href="/reservations">Réservations</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/users">👥 Utilisateurs</a>
+                        <a class="nav-link" href="/users">Utilisateurs</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/api-docs" target="_blank">📚 API Docs</a>
+                        <a class="nav-link" href="/api-docs" target="_blank">API Docs</a>
                     </li>
                     <li class="nav-item">
-                        <button class="btn btn-outline-light btn-sm ms-2" onclick="logout()">🚪 Déconnexion</button>
+                        <button class="btn btn-outline-light btn-sm ms-2" onclick="logout()">Déconnexion</button>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
 
-    <!-- Contenu principal -->
     <div class="container mt-4">
-
-        <!-- En-tête avec bouton d'ajout -->
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>⚓ Gestion des Catways</h2>
+            <h2>Gestion des Catways</h2>
             <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addCatwayModal">
-                ➕ Nouveau Catway
+                Nouveau Catway
             </button>
         </div>
 
-        <!-- Filtres -->
         <div class="card mb-4">
             <div class="card-body">
                 <div class="row g-3">
                     <div class="col-md-3">
-                        <input type="number" class="form-control" id="searchNumber" placeholder="🔍 Chercher par numéro...">
+                        <input type="number" class="form-control" id="searchNumber" placeholder="Chercher par numéro...">
                     </div>
                     <div class="col-md-3">
                         <select class="form-select" id="filterType">
@@ -66,16 +60,15 @@
                         </select>
                     </div>
                     <div class="col-md-3">
-                        <input type="text" class="form-control" id="searchState" placeholder="🔍 Chercher par état...">
+                        <input type="text" class="form-control" id="searchState" placeholder="Chercher par état...">
                     </div>
                     <div class="col-md-3">
-                        <button class="btn btn-outline-secondary w-100" onclick="resetFilters()">🔄 Réinitialiser</button>
+                        <button class="btn btn-outline-secondary w-100" onclick="resetFilters()">Réinitialiser</button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Statistiques rapides -->
         <div class="row mb-4">
             <div class="col-md-4">
                 <div class="card text-white bg-info">
@@ -125,14 +118,13 @@
                                 </tr>
                             </thead>
                             <tbody id="catwaysBody">
-                                <!-- Rempli par JavaScript -->
                             </tbody>
                         </table>
                     </div>
                 </div>
 
                 <div id="noCatways" style="display: none;" class="alert alert-info">
-                    ℹ️ Aucun catway trouvé
+                    Aucun catway trouvé
                 </div>
             </div>
         </div>
@@ -144,7 +136,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header bg-success text-white">
-                    <h5 class="modal-title">➕ Nouveau Catway</h5>
+                    <h5 class="modal-title">Nouveau Catway</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
@@ -182,7 +174,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header bg-warning">
-                    <h5 class="modal-title">✏️ Modifier le Catway</h5>
+                    <h5 class="modal-title">Modifier le Catway</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
@@ -219,7 +211,7 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header bg-info text-white">
-                    <h5 class="modal-title">🔍 Détails du Catway</h5>
+                    <h5 class="modal-title">Détails du Catway</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
@@ -247,17 +239,12 @@
         </div>
     </div>
 
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Script personnalisé -->
     <script src="/javascript.js"></script>
+
     <script>
         let allCatways = [];
-
-        // ========================================
-        // CHARGEMENT AU DÉMARRAGE
-        // ========================================
+        // Charger les catways
         document.addEventListener('DOMContentLoaded', () => {
             checkAuth();
             loadCatways();
@@ -268,9 +255,7 @@
             document.getElementById('searchState').addEventListener('input', filterCatways);
         });
 
-        // ========================================
-        // CHARGER TOUS LES CATWAYS
-        // ========================================
+        // Charger les catways depuis l'API
         async function loadCatways() {
             const token = localStorage.getItem('token');
             const loadingDiv = document.getElementById('loadingCatways');
@@ -303,9 +288,7 @@
             }
         }
 
-        // ========================================
-        // AFFICHER LES CATWAYS
-        // ========================================
+        // Afficher les catways dans le tableau
         function displayCatways(catways) {
             const tbody = document.getElementById('catwaysBody');
 
@@ -344,18 +327,14 @@
             document.getElementById('catwaysTable').style.display = 'block';
         }
 
-        // ========================================
-        // METTRE À JOUR LES STATISTIQUES
-        // ========================================
+        // Mettre à jour les statistiques
         function updateStats(catways) {
             document.getElementById('totalCatways').textContent = catways.length;
             document.getElementById('longCatways').textContent = catways.filter(c => c.catwayType === 'long').length;
             document.getElementById('shortCatways').textContent = catways.filter(c => c.catwayType === 'short').length;
         }
 
-        // ========================================
-        // FILTRER LES CATWAYS
-        // ========================================
+        // Filtrer les catways
         function filterCatways() {
             const searchNumber = document.getElementById('searchNumber').value;
             const filterType = document.getElementById('filterType').value;
@@ -373,9 +352,7 @@
             updateStats(filtered);
         }
 
-        // ========================================
-        // RÉINITIALISER LES FILTRES
-        // ========================================
+        // Réinitialiser les filtres
         function resetFilters() {
             document.getElementById('searchNumber').value = '';
             document.getElementById('filterType').value = '';
@@ -384,9 +361,7 @@
             updateStats(allCatways);
         }
 
-        // ========================================
-        // AJOUTER UN CATWAY
-        // ========================================
+        // Ajouter un catway
         document.getElementById('addCatwayForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const token = localStorage.getItem('token');
@@ -423,9 +398,7 @@
             }
         });
 
-        // ========================================
-        // OUVRIR LE MODAL DE MODIFICATION
-        // ========================================
+        // Ouvrir le modal de modification
         function openEditModal(number, type, state) {
             document.getElementById('editCatwayId').value = number;
             document.getElementById('editCatwayNumber').value = number;
@@ -435,9 +408,7 @@
             new bootstrap.Modal(document.getElementById('editCatwayModal')).show();
         }
 
-        // ========================================
-        // MODIFIER UN CATWAY
-        // ========================================
+        // Modifier un catway
         document.getElementById('editCatwayForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const token = localStorage.getItem('token');
@@ -472,9 +443,7 @@
             }
         });
 
-        // ========================================
-        // SUPPRIMER UN CATWAY
-        // ========================================
+        // Supprimer un catway
         async function deleteCatway(id) {
             if (!confirm('⚠️ Supprimer ce catway ?')) return;
 
@@ -500,9 +469,7 @@
             }
         }
 
-        // ========================================
-        // OUVRIR LE MODAL DÉTAILS
-        // ========================================
+        // Ouvrir le modal de détails
         async function openDetailsModal(id) {
             const token = localStorage.getItem('token');
 
@@ -520,7 +487,6 @@
                     document.getElementById('detailsState').textContent = catway.catwayState;
                 }
 
-                // Récupérer les réservations
                 const reservationsResponse = await fetch(`/api/catways/${id}/reservations`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });

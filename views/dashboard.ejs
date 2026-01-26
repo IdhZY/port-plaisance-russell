@@ -7,48 +7,43 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    
-    <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/dashboard">⚓ Port Russell - Dashboard</a>
+            <a class="navbar-brand" href="/dashboard"> Port Russell - Dashboard</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link active" href="/dashboard">🏠 Accueil</a>
+                        <a class="nav-link active" href="/dashboard">Accueil</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/catways">⚓ Catways</a>
+                        <a class="nav-link" href="/catways">Catways</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/reservations">📅 Réservations</a>
+                        <a class="nav-link" href="/reservations">Réservations</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/users">👥 Utilisateurs</a>
+                        <a class="nav-link" href="/users">Utilisateurs</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/api-docs" target="_blank">📚 API Docs</a>
+                        <a class="nav-link" href="/api-docs" target="_blank">API Docs</a>
                     </li>
                     <li class="nav-item">
-                        <button class="btn btn-outline-light btn-sm ms-2" onclick="logout()">🚪 Déconnexion</button>
+                        <button class="btn btn-outline-light btn-sm ms-2" onclick="logout()">Déconnexion</button>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
 
-    <!-- Contenu principal -->
     <div class="container mt-4">
-        
-        <!-- En-tête utilisateur -->
         <div class="row mb-4">
             <div class="col-md-8">
                 <div class="card">
                     <div class="card-body">
-                        <h4 class="card-title">👤 Utilisateur connecté</h4>
+                        <h4 class="card-title">Utilisateur connecté</h4>
                         <p class="mb-1"><strong>Nom :</strong> <span id="userName">Chargement...</span></p>
                         <p class="mb-0"><strong>Email :</strong> <span id="userEmail">Chargement...</span></p>
                     </div>
@@ -57,7 +52,7 @@
             <div class="col-md-4">
                 <div class="card">
                     <div class="card-body text-center">
-                        <h4 class="card-title">📅 Date du jour</h4>
+                        <h4 class="card-title">Date du jour</h4>
                         <p class="mb-0 fs-5" id="currentDate">Chargement...</p>
                     </div>
                 </div>
@@ -69,7 +64,7 @@
             <div class="col-md-4">
                 <div class="card text-white bg-info">
                     <div class="card-body text-center">
-                        <h5 class="card-title">⚓ Catways</h5>
+                        <h5 class="card-title">Catways</h5>
                         <p class="display-4" id="totalCatways">-</p>
                     </div>
                 </div>
@@ -77,7 +72,7 @@
             <div class="col-md-4">
                 <div class="card text-white bg-success">
                     <div class="card-body text-center">
-                        <h5 class="card-title">📅 Réservations en cours</h5>
+                        <h5 class="card-title">Réservations en cours</h5>
                         <p class="display-4" id="activeReservations">-</p>
                     </div>
                 </div>
@@ -85,7 +80,7 @@
             <div class="col-md-4">
                 <div class="card text-white bg-warning">
                     <div class="card-body text-center">
-                        <h5 class="card-title">👥 Utilisateurs</h5>
+                        <h5 class="card-title">Utilisateurs</h5>
                         <p class="display-4" id="totalUsers">-</p>
                     </div>
                 </div>
@@ -95,7 +90,7 @@
         <!-- Tableau des réservations en cours -->
         <div class="card">
             <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">📋 Réservations en cours</h5>
+                <h5 class="mb-0">Réservations en cours</h5>
             </div>
             <div class="card-body">
                 <div id="loadingReservations" class="text-center">
@@ -116,13 +111,12 @@
                                 </tr>
                             </thead>
                             <tbody id="reservationsBody">
-                                <!-- Rempli par JavaScript -->
                             </tbody>
                         </table>
                     </div>
                 </div>
                 <div id="noReservations" style="display: none;" class="alert alert-info">
-                    ℹ️ Aucune réservation en cours
+                    Aucune réservation en cours
                 </div>
             </div>
         </div>
@@ -133,29 +127,15 @@
     
     <script src="/javascript.js"></script>
     <script>
-        // ========================================
-        // CHARGEMENT DES DONNÉES AU DÉMARRAGE
-        // ========================================
+        
         document.addEventListener('DOMContentLoaded', async () => {
-            // Vérifier l'authentification
             checkAuth();
-            
-            // Afficher les infos utilisateur
             displayUserInfo();
-            
-            // Afficher la date
             displayCurrentDate();
-            
-            // Charger les statistiques
             await loadStatistics();
-            
-            // Charger les réservations en cours
             await loadActiveReservations();
         });
 
-        // ========================================
-        // AFFICHER LES INFOS UTILISATEUR
-        // ========================================
         function displayUserInfo() {
             const user = JSON.parse(localStorage.getItem('user'));
             if (user) {
@@ -164,9 +144,6 @@
             }
         }
 
-        // ========================================
-        // AFFICHER LA DATE DU JOUR
-        // ========================================
         function displayCurrentDate() {
             const options = { 
                 weekday: 'long', 
@@ -178,27 +155,21 @@
             document.getElementById('currentDate').textContent = today;
         }
 
-        // ========================================
-        // CHARGER LES STATISTIQUES
-        // ========================================
         async function loadStatistics() {
             const token = localStorage.getItem('token');
             
             try {
-                // Total catways
                 const catwaysRes = await fetch('/api/catways', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const catwaysData = await catwaysRes.json();
                 document.getElementById('totalCatways').textContent = catwaysData.data?.length || 0;
 
-                // Total réservations
                 const reservationsRes = await fetch('/api/catways/reservations/all', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const reservationsData = await reservationsRes.json();
-                
-                // Compter les réservations en cours
+
                 const now = new Date();
                 const active = reservationsData.data?.filter(r => {
                     const start = new Date(r.startDate);
@@ -208,7 +179,6 @@
                 
                 document.getElementById('activeReservations').textContent = active;
 
-                // Total utilisateurs
                 const usersRes = await fetch('/api/users', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -220,9 +190,6 @@
             }
         }
 
-        // ========================================
-        // CHARGER LES RÉSERVATIONS EN COURS
-        // ========================================
         async function loadActiveReservations() {
             const token = localStorage.getItem('token');
             const loadingDiv = document.getElementById('loadingReservations');
@@ -244,7 +211,6 @@
                     return;
                 }
 
-                // Filtrer les réservations en cours
                 const now = new Date();
                 const activeReservations = result.data.filter(r => {
                     const start = new Date(r.startDate);
@@ -257,7 +223,6 @@
                     return;
                 }
 
-                // Afficher les réservations
                 tbody.innerHTML = activeReservations.map(r => `
                     <tr>
                         <td><strong>${r.catwayNumber}</strong></td>

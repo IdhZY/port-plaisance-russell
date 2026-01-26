@@ -8,15 +8,10 @@ const app = express();
 // Connexion MongoDB
 connectDB();
 
-// ========================================
-// CONFIGURATION EJS
-// ========================================
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// ========================================
-// MIDDLEWARE
-// ========================================
+// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -25,12 +20,10 @@ app.use((req, res, next) => {
   next();
 });
 
-// Servir les fichiers statiques (CSS, JS, images)
+// Servir les fichiers CSS, JS
 app.use(express.static(path.join(__dirname, 'public')));
 
-// ========================================
-// ROUTES FRONTEND (PAGES HTML)
-// ========================================
+// Routes
 app.get('/', (req, res) => {
   res.render('index');
 });
@@ -64,17 +57,13 @@ app.get('/health', (req, res) => {
   });
 });
 
-// ========================================
-// IMPORT DES ROUTES API
-// ========================================
+// Importer les routes
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/usersRoutes');
 const catwayRoutes = require('./routes/catwaysRoutes');
 const reservationRoutes = require('./routes/reservationRoutes'); 
 
-// ============================================
-// 🆕 ROUTE POUR RÉCUPÉRER TOUTES LES RÉSERVATIONS
-// ============================================
+// Route pour récupérer les réservations
 app.get('/api/catways/reservations/all', async (req, res) => {
     try {
         const Reservation = require('./models/Reservation');
@@ -94,19 +83,13 @@ app.get('/api/catways/reservations/all', async (req, res) => {
     }
 });
 
-// ========================================
-// MONTAGE DES ROUTES API
-// ========================================
+// Montage des routes API
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/catways', catwayRoutes);
 app.use('/api/catways', reservationRoutes);
 
-// ========================================
-// GESTION DES ERREURS
-// ========================================
-
-// 404 Handler
+// Gestion des erreurs 404 et 500
 app.use((req, res) => {
   console.log('❌ 404 - Route non trouvée:', req.originalUrl);
   res.status(404).json({ 
@@ -116,7 +99,6 @@ app.use((req, res) => {
   });
 });
 
-// Error Handler
 app.use((err, req, res, next) => {
   console.error('❌ Erreur serveur:', err);
   res.status(err.status || 500).json({ 
@@ -125,9 +107,7 @@ app.use((err, req, res, next) => {
   });
 });
 
-// ========================================
-// DÉMARRAGE DU SERVEUR
-// ========================================
+// Démarrage du serveur
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`\n🚀 Serveur démarré sur le port ${PORT}`);

@@ -1,9 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const reservationController = require('../controllers/reservationController');
-const { verifyToken } = require('../middleware/authMiddleware'); // ← CHANGE ICI
+const { verifyToken } = require('../middleware/authMiddleware');
 
-// Routes réservations (toutes protégées)
 router.get('/:id/reservations', verifyToken, reservationController.getReservationsByCatway);
 router.get('/:id/reservations/:idReservation', verifyToken, reservationController.getReservationById);
 router.post('/:id/reservations', verifyToken, reservationController.createReservation);

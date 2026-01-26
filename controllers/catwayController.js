@@ -18,11 +18,10 @@ exports.getAllCatways = async (req, res) => {
   }
 };
 
-// Catways/:id OU /:catwayNumber
+// Catways ID ou CatwayNumber
 exports.getCatwayById = async (req, res) => {
   try {
     const { id } = req.params;
-    console.log('🔍 Recherche:', id);
 
     let catway;
     try {
@@ -43,6 +42,7 @@ exports.getCatwayById = async (req, res) => {
       success: true,
       data: catway
     });
+
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -52,12 +52,12 @@ exports.getCatwayById = async (req, res) => {
   }
 };
 
-// Créer un nouveau catway
+// POST
 exports.createCatway = async (req, res) => {
   try {
     const { catwayNumber, catwayType, catwayState } = req.body;
-
     const existingCatway = await Catway.findOne({ catwayNumber });
+
     if (existingCatway) {
       return res.status(400).json({
         success: false,
@@ -76,6 +76,7 @@ exports.createCatway = async (req, res) => {
       message: 'Catway créé avec succès',
       data: catway
     });
+
   } catch (error) {
     res.status(400).json({
       success: false,
@@ -116,6 +117,7 @@ exports.updateCatway = async (req, res) => {
       message: 'Catway mis à jour',
       data: catway
     });
+
   } catch (error) {
     res.status(400).json({
       success: false,
@@ -149,6 +151,7 @@ exports.deleteCatway = async (req, res) => {
       success: true,
       message: `Catway ${catway.catwayNumber} supprimé`
     });
+
   } catch (error) {
     res.status(500).json({
       success: false,

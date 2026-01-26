@@ -1,9 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
-const { verifyToken } = require('../middleware/authMiddleware'); // ← CHANGE ICI
+const { verifyToken } = require('../middleware/authMiddleware');
 
-// Protéger toutes les routes users
 router.get('/', verifyToken, userController.getAllUsers);
 router.get('/:email', verifyToken, userController.getUserByEmail);
 router.post('/', verifyToken, userController.createUser);
